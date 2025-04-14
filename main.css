@@ -1,3 +1,16 @@
+.header {
+    background-color: rgb(42, 171, 61);
+    background-image: url(http://www.world-free-printable-flags.com/images/nepal-free-flag-desktop.jpg);
+    background-size: contain;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    font-size: 30px;
+    font-family: 'Arial', sans-serif;
+}
+
 .navbar {
     color: #000;
     background-color: rgb(38, 196, 62);
