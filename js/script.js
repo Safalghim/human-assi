@@ -68,16 +68,26 @@ class ProductManager {
     }
   }
 
-  static filterProducts(category) {
+  static filterProducts(category, customProducts = null) {
     const productContainer = document.querySelector(".products-list");
     if (!productContainer) return;
 
     try {
       productContainer.innerHTML = "";
       const productsToShow =
-        category === "all"
+        customProducts ||
+        (category === "all"
           ? this.products
-          : this.products.filter((product) => product.category === category);
+          : this.products.filter((product) => product.category === category));
+
+      if (productsToShow.length === 0) {
+        productContainer.innerHTML = `
+          <div class="no-products">
+            <p>No products found</p>
+          </div>
+        `;
+        return;
+      }
 
       productsToShow.forEach((product) => {
         const productCard = this.createProductCard(product);
