@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Categories - Nepalese Traditional Goods</title>
+    <link rel="stylesheet" href="../css/main.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a href="#main" class="skip-to-content">Skip to main content</a>
+
+    <header>
+      <div class="header">
+        <h1>Nepalese Goods</h1>
+      </div>
+    </header>
+
+    <nav aria-label="Main navigation">
+      <div class="navbar">
+        <ul class="nav-links">
+          <li><a href="../">Home</a></li>
+          <li>
+            <a href="categories.html" class="active" aria-current="page"
+              >Shop</a
+            >
+          </li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="about.html">About Us</a></li>
+        </ul>
+
+        <div class="search-bar" role="search">
+          <input
+            type="text"
+            placeholder="Search products..."
+            aria-label="Search products"
+          />
+          <button type="submit" aria-label="Search">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+
+        <div class="user-actions">
+          <a href="sign-in.html" class="user-icon" aria-label="Sign in">
+            <i class="fas fa-user"></i>
+          </a>
+          <a href="cart.html" class="cart-icon" aria-label="Shopping cart">
+            <i class="fas fa-shopping-cart"></i>
+            <span class="cart-count" aria-label="Items in cart">0</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <main id="main">
+      <section class="categories-header">
+        <h1>Shop by Category</h1>
+        <p>Discover our wide range of authentic Nepalese products</p>
+      </section>
+
+      <section class="category-section">
+        <div class="filter-container">
+          <!-- Filter groups will be dynamically inserted here -->
+        </div>
+
+        <div class="category-count">
+          <!-- Product count will be inserted here -->
+        </div>
+
+        <div class="product-grid">
+          <div class="products-list">
+            <!-- Products will be dynamically inserted here -->
+          </div>
+        </div>
+
+        <div class="recent-products">
+          <!-- Recently viewed products will be dynamically loaded here -->
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-container">
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="../">Home</a></li>
+            <li><a href="categories.html">Shop</a></li>
+            <li><a href="about.html">About Us</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h3>Contact Us</h3>
+          <p>
+            <i class="fas fa-envelope"></i>
+            <a href="mailto:support@nepalesegood.com"
+              >support@nepalesegood.com</a
+            >
+          </p>
+          <p><i class="fas fa-phone"></i> +44 7824 097509 | +977 9845963639</p>
+          <p><i class="fas fa-map-marker-alt"></i> Kalanki, Kathmandu, Nepal</p>
+        </div>
+
+        <div class="footer-section">
+          <h3>Follow Us</h3>
+          <div class="social-links">
+            <a href="https://www.facebook.com" target="_blank"
+              ><i class="fab fa-facebook"></i
+            ></a>
+            <a href="https://www.twitter.com" target="_blank"
+              ><i class="fab fa-twitter"></i
+            ></a>
+            <a href="https://www.instagram.com" target="_blank"
+              ><i class="fab fa-instagram"></i
+            ></a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>
+          &copy;
+          <script>
+            document.write(new Date().getFullYear());
+          </script>
+          Nepalese Goods. All rights reserved.
+        </p>
+      </div>
+    </footer>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/search.js"></script>
+    <script src="../js/filters.js"></script>
+    <script src="../js/recent-products.js"></script>
+    <script src="../js/cart.js"></script>
+  </body>
+</html>
