@@ -232,7 +232,7 @@ header h1 {
 .hero {
   min-height: 80vh;
   background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7)),
-    url("images/mandala.jpg");
+    url("../images/mandala.jpg");
 
   background-size: cover;
   background-repeat: no-repeat;
