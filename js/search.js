@@ -1,39 +1,67 @@
 // Advanced search functionality with fuzzy matching and performance optimization
-let searchTimeout = null;
-const DEBOUNCE_DELAY = 300;
-const MIN_QUERY_LENGTH = 2;
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-
 class SearchManager {
+  static debounceTimeout;
+  static lastQuery = "";
+
   static init() {
-    this.setupSearchListener();
-  }
+    const searchInput = document.getElementById("search-input");
+    if (!searchInput) return;
 
-  static setupSearchListener() {
-    const searchInput = document.querySelector(".search-bar input");
-    const searchButton = document.querySelector(".search-bar button");
+    searchInput.addEventListener("input", (e) => {
+      clearTimeout(this.debounceTimeout);
+      this.debounceTimeout = setTimeout(() => {
+        const query = e.target.value.trim().toLowerCase();
+        if (query === this.lastQuery) return;
 
-    const performSearch = () => {
-      const searchTerm = searchInput.value.toLowerCase().trim();
-      const filteredProducts = ProductManager.products.filter(
-        (product) =>
-          product.name.toLowerCase().includes(searchTerm) ||
-          product.description.toLowerCase().includes(searchTerm) ||
-          product.category.toLowerCase().includes(searchTerm)
-      );
-
-      ProductManager.filterProducts("all", filteredProducts);
-      FilterManager.updateProductCount(filteredProducts.length);
-    };
-
-    searchInput.addEventListener("input", performSearch);
-    searchButton.addEventListener("click", (e) => {
-      e.preventDefault();
-      performSearch();
+        this.lastQuery = query;
+        this.performSearch(query);
+      }, 300);
     });
   }
-}
 
-document.addEventListener("DOMContentLoaded", () => {
-  SearchManager.init();
-});
+  static async performSearch(query) {
+    if (!window.ProductManager?.products) {
+      console.error("ProductManager not initialized");
+      return;
+    }
+
+    try {
+      let filteredProducts;
+
+      if (!query) {
+        // Reset to show all products
+        window.ProductManager.filterProducts("all");
+        return;
+      }
+
+      filteredProducts = window.ProductManager.products.filter((product) => {
+        const searchableText =
+          `${product.name} ${product.description} ${product.category}`.toLowerCase();
+        return searchableText.includes(query);
+      });
+
+      // Use the existing filter method to display results
+      window.ProductManager.filterProducts("all", filteredProducts);
+
+      // Update UI to show search results count
+      const resultsCount = document.querySelector(".results-count");
+      if (resultsCount) {
+        resultsCount.textContent = `${filteredProducts.length} results found`;
+      }
+    } catch (error) {
+      console.error("Search error:", error);
+      if (window.showNotification) {
+        window.showNotification("Error performing search", "error");
+      }
+    }
+  }
+
+  static clearSearch() {
+    const searchInput = document.getElementById("search-input");
+    if (searchInput) {
+      searchInput.value = "";
+      this.lastQuery = "";
+      window.ProductManager?.filterProducts("all");
+    }
+  }
+}

@@ -1,42 +1,32 @@
-// Store user data in localStorage
-const users = JSON.parse(localStorage.getItem("users")) || [];
 
-// Authentication management
 class AuthManager {
-  static get SESSION_DURATION() {
-    return 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+  static #ENCRYPTION_KEY = "your-secret-key";
+  static #SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+  static init() {
+    this.checkAuth();
+    this.setupAuthForms();
   }
 
-  static async hashPassword(password) {
-    // First check if Web Crypto is available
-    if (!window.crypto || !window.crypto.subtle) {
-      // Fallback to a basic hash if crypto API not available
-      let hash = 0;
-      for (let i = 0; i < password.length; i++) {
-        const char = password.charCodeAt(i);
-        hash = (hash << 5) - hash + char;
-        hash = hash & hash;
-      }
-      return hash.toString(16);
+  static setupAuthForms() {
+    const signupForm = document.getElementById("signup-form");
+    const signinForm = document.getElementById("signin-form");
+
+    if (signupForm) {
+      window.setupFormValidation(signupForm);
+      signupForm.addEventListener("submit", this.handleSignUp.bind(this));
     }
 
-    try {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(password);
-      const hash = await crypto.subtle.digest("SHA-256", data);
-      return Array.from(new Uint8Array(hash))
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
-    } catch (error) {
-      console.error("Crypto API error:", error);
-      throw new Error("Failed to hash password securely");
+    if (signinForm) {
+      window.setupFormValidation(signinForm);
+      signinForm.addEventListener("submit", this.handleSignIn.bind(this));
     }
   }
 
   static async handleSignUp(event) {
     event.preventDefault();
 
-    if (!validateForm(event.target)) {
+    if (!window.validateForm(event.target)) {
       return;
     }
 
@@ -46,15 +36,7 @@ class AuthManager {
     const confirmPassword = document.getElementById("confirm-password").value;
 
     if (password !== confirmPassword) {
-      this.showNotification("Passwords do not match", "error");
-      return;
-    }
-
-    if (users.some((user) => user.email === email)) {
-      this.showNotification(
-        "An account with this email already exists",
-        "error"
-      );
+      window.Utils.showNotification("Passwords do not match", "error");
       return;
     }
 
@@ -66,6 +48,11 @@ class AuthManager {
       submitButton.innerHTML =
         '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
 
+      const users = await this.getUsers();
+      if (users.some((user) => user.email === email)) {
+        throw new Error("An account with this email already exists");
+      }
+
       const hashedPassword = await this.hashPassword(password);
       const user = {
         id: crypto.randomUUID(),
@@ -74,25 +61,29 @@ class AuthManager {
         password: hashedPassword,
         sessionToken: this.generateSessionToken(),
         created: new Date().toISOString(),
+        lastLogin: new Date().toISOString(),
       };
 
       users.push(user);
-      localStorage.setItem("users", JSON.stringify(users));
+      await this.setUsers(users);
+
       this.setUserSession(user);
 
-      this.showNotification(
+      window.Utils.showNotification(
         "Account created successfully! Redirecting...",
         "success"
       );
       setTimeout(() => {
-        window.location.href = "index.html";
+        window.location.href = "../index.html";
       }, 1500);
     } catch (error) {
       console.error("Sign up error:", error);
-      this.showNotification(
-        "There was a problem creating your account. Please try again.",
+      window.Utils.showNotification(
+        error.message ||
+          "There was a problem creating your account. Please try again.",
         "error"
       );
+    } finally {
       submitButton.disabled = false;
       submitButton.textContent = originalText;
     }
@@ -101,7 +92,7 @@ class AuthManager {
   static async handleSignIn(event) {
     event.preventDefault();
 
-    if (!validateForm(event.target)) {
+    if (!window.validateForm(event.target)) {
       return;
     }
 
@@ -116,6 +107,7 @@ class AuthManager {
         '<i class="fas fa-spinner fa-spin"></i> Signing In...';
 
       const hashedPassword = await this.hashPassword(password);
+      const users = await this.getUsers();
       const user = users.find(
         (u) => u.email === email && u.password === hashedPassword
       );
@@ -123,51 +115,47 @@ class AuthManager {
       if (user) {
         user.sessionToken = this.generateSessionToken();
         user.lastLogin = new Date().toISOString();
-        localStorage.setItem("users", JSON.stringify(users));
-        this.setUserSession(user);
+        await this.setUsers(users);
 
-        this.showNotification("Welcome back! Redirecting...", "success");
+        this.setUserSession(user);
+        window.Utils.showNotification(
+          "Welcome back! Redirecting...",
+          "success"
+        );
+
         setTimeout(() => {
-          window.location.href = "index.html";
+          window.location.href = "../index.html";
         }, 1500);
       } else {
-        this.showNotification(
-          "Invalid email or password. Please try again.",
-          "error"
-        );
-        submitButton.disabled = false;
-        submitButton.textContent = originalText;
+        throw new Error("Invalid email or password");
       }
     } catch (error) {
       console.error("Sign in error:", error);
-      this.showNotification(
-        "There was a problem signing in. Please try again.",
+      window.Utils.showNotification(
+        error.message || "There was a problem signing in. Please try again.",
         "error"
       );
+    } finally {
       submitButton.disabled = false;
       submitButton.textContent = originalText;
     }
   }
 
-  static checkAuth() {
-    const currentUser = this.getUserSession();
-    if (!currentUser) {
-      return false;
-    }
+  static handleSignOut() {
+    this.clearUserSession();
+    window.Utils.showNotification(
+      "You have been signed out successfully",
+      "success"
+    );
+    window.location.href = "../index.html";
+  }
 
-    // Check if session has expired
-    const lastLogin = new Date(currentUser.lastLogin).getTime();
-    const now = new Date().getTime();
-    if (now - lastLogin > this.SESSION_DURATION) {
-      this.clearUserSession();
-      this.showNotification(
-        "Your session has expired. Please sign in again.",
-        "error"
-      );
-      return false;
-    }
-
-    return true;
+  static async hashPassword(password) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password + this.#ENCRYPTION_KEY);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
   static generateSessionToken() {
@@ -175,101 +163,88 @@ class AuthManager {
   }
 
   static setUserSession(user) {
-    const sessionData = {
+    const session = {
       id: user.id,
-      fullname: user.fullname,
       email: user.email,
+      fullname: user.fullname,
       sessionToken: user.sessionToken,
-      lastLogin: new Date().toISOString(),
+      expires: Date.now() + this.#SESSION_DURATION,
     };
-    localStorage.setItem("currentUser", JSON.stringify(sessionData));
+    localStorage.setItem("session", JSON.stringify(session));
+    this.updateAuthUI(true);
   }
 
-  static getUserSession() {
-    const sessionData = localStorage.getItem("currentUser");
-    if (!sessionData) return null;
+  static clearUserSession() {
+    localStorage.removeItem("session");
+    this.updateAuthUI(false);
+  }
 
-    try {
-      const user = JSON.parse(sessionData);
-      const storedUser = users.find(
-        (u) => u.id === user.id && u.sessionToken === user.sessionToken
-      );
-
-      if (!storedUser) {
-        this.clearUserSession();
-        return null;
-      }
-
-      return user;
-    } catch (error) {
-      console.error("Session error:", error);
+  static checkAuth() {
+    const session = this.getCurrentSession();
+    if (!session) {
       this.clearUserSession();
+      return false;
+    }
+
+    if (Date.now() > session.expires) {
+      this.clearUserSession();
+      return false;
+    }
+
+    this.updateAuthUI(true);
+    return true;
+  }
+
+  static getCurrentSession() {
+    try {
+      return JSON.parse(localStorage.getItem("session"));
+    } catch {
       return null;
     }
   }
 
-  static clearUserSession() {
-    localStorage.removeItem("currentUser");
+  static updateAuthUI(isAuthenticated) {
+    const session = this.getCurrentSession();
+    const authLinks = document.querySelectorAll(".auth-link");
+    const userMenu = document.querySelector(".user-menu");
+
+    authLinks.forEach((link) => {
+      link.style.display = isAuthenticated ? "none" : "block";
+    });
+
+    if (userMenu) {
+      if (isAuthenticated && session) {
+        userMenu.style.display = "block";
+        const userNameElement = userMenu.querySelector(".user-name");
+        if (userNameElement) {
+          userNameElement.textContent = session.fullname;
+        }
+      } else {
+        userMenu.style.display = "none";
+      }
+    }
   }
 
-  static showNotification(message, type = "success") {
-    if (window.showNotification) {
-      window.showNotification(message, type);
-      return;
+  static async getUsers() {
+    try {
+      const usersJson = localStorage.getItem("users");
+      return usersJson ? JSON.parse(usersJson) : [];
+    } catch {
+      return [];
     }
+  }
 
-    // Fallback notification system
-    const existingNotification = document.querySelector(".notification");
-    if (existingNotification) {
-      existingNotification.remove();
+  static async setUsers(users) {
+    try {
+      localStorage.setItem("users", JSON.stringify(users));
+      return true;
+    } catch (error) {
+      console.error("Error saving users:", error);
+      return false;
     }
-
-    const notification = document.createElement("div");
-    notification.className = `notification ${type}`;
-    notification.setAttribute("role", "alert");
-    notification.textContent = message;
-    document.body.appendChild(notification);
-
-    if (type === "error") {
-      notification.setAttribute("aria-live", "assertive");
-    } else {
-      notification.setAttribute("aria-live", "polite");
-    }
-
-    setTimeout(() => {
-      notification.classList.add("fade-out");
-      setTimeout(() => notification.remove(), 300);
-    }, 3000);
   }
 }
 
-// Initialize auth system
 document.addEventListener("DOMContentLoaded", () => {
-  const signupForm = document.getElementById("signup-form");
-  const signinForm = document.getElementById("signin-form");
-
-  if (signupForm) {
-    setupFormValidation(signupForm);
-    signupForm.addEventListener(
-      "submit",
-      AuthManager.handleSignUp.bind(AuthManager)
-    );
-  }
-
-  if (signinForm) {
-    setupFormValidation(signinForm);
-    signinForm.addEventListener(
-      "submit",
-      AuthManager.handleSignIn.bind(AuthManager)
-    );
-  }
-
-  AuthManager.checkAuth();
+  AuthManager.init();
 });
-
-// Export the AuthManager class
-if (typeof module !== "undefined" && module.exports) {
-  module.exports = AuthManager;
-} else {
-  window.AuthManager = AuthManager;
-}

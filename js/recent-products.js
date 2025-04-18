@@ -34,13 +34,8 @@ class RecentProductsManager {
     let recentProducts =
       JSON.parse(localStorage.getItem("recentProducts")) || [];
 
-    // Remove if product already exists
     recentProducts = recentProducts.filter((p) => p.id !== product.id);
-
-    // Add to beginning of array
     recentProducts.unshift(product);
-
-    // Keep only the last N products
     recentProducts = recentProducts.slice(0, this.maxRecentProducts);
 
     localStorage.setItem("recentProducts", JSON.stringify(recentProducts));

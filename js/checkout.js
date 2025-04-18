@@ -2,80 +2,185 @@ class CheckoutManager {
   static init() {
     this.populateOrderSummary();
     this.initializeFormValidation();
+    this.setupPaymentMethodToggle();
   }
 
   static populateOrderSummary() {
-    const summaryItems = document.querySelector(".summary-items");
-    const subtotalElement = document.querySelector(".subtotal span:last-child");
-    const shippingElement = document.querySelector(".shipping span:last-child");
-    const totalElement = document.querySelector(".total span:last-child");
-
     const cartItems = JSON.parse(localStorage.getItem("cart")) || [];
+    const summaryContainer = document.querySelector(".order-summary");
+    const totalElement = document.querySelector(".order-total");
 
-    // Clear existing items
-    summaryItems.innerHTML = "";
+    if (summaryContainer) {
+      if (cartItems.length === 0) {
+        summaryContainer.innerHTML =
+          '<p class="empty-cart">Your cart is empty</p>';
+        window.location.href = "cart.html";
+        return;
+      }
 
-    // Add each item to the summary
-    cartItems.forEach((item) => {
-      const itemElement = document.createElement("div");
-      itemElement.className = "summary-item";
-      itemElement.innerHTML = `
-        <div class="item-details">
-          <span class="item-name">${item.name}</span>
-          <span class="item-quantity">x${item.quantity}</span>
-        </div>
-        <span class="item-price">£${(item.price * item.quantity).toFixed(
-          2
-        )}</span>
-      `;
-      summaryItems.appendChild(itemElement);
-    });
+      const itemsHtml = cartItems
+        .map(
+          (item) => `
+                <div class="summary-item">
+                    <img src="${item.image}" alt="${
+            item.name
+          }" class="summary-item-image">
+                    <div class="summary-item-details">
+                        <h3>${item.name}</h3>
+                        <p class="quantity">Quantity: ${item.quantity}</p>
+                        <p class="price">$${(
+                          item.price * item.quantity
+                        ).toFixed(2)}</p>
+                    </div>
+                </div>
+            `
+        )
+        .join("");
 
-    // Calculate totals
-    const subtotal = cartItems.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
-    const shipping = subtotal > 0 ? 5.0 : 0; // £5 shipping fee if cart not empty
-    const total = subtotal + shipping;
+      summaryContainer.innerHTML = itemsHtml;
 
-    // Update totals display
-    subtotalElement.textContent = `£${subtotal.toFixed(2)}`;
-    shippingElement.textContent = `£${shipping.toFixed(2)}`;
-    totalElement.textContent = `£${total.toFixed(2)}`;
+      const total = cartItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      );
+      if (totalElement) {
+        totalElement.textContent = `$${total.toFixed(2)}`;
+      }
+    }
   }
 
   static initializeFormValidation() {
     const form = document.getElementById("checkout-form");
+    if (!form) return;
 
-    form.addEventListener("submit", (e) => {
+    // Initialize form validation
+    window.setupFormValidation(form);
+
+    // Add custom validation for payment fields
+    this.setupPaymentFieldValidation();
+
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      if (this.validateForm()) {
-        // Process the order
-        this.processOrder();
+      if (!window.validateForm(form)) {
+        return;
       }
+
+      await this.processOrder(form);
     });
   }
 
-  static validateForm() {
-    // Add form validation logic here
-    return true;
+  static setupPaymentMethodToggle() {
+    const paymentMethods = document.querySelectorAll(
+      'input[name="payment-method"]'
+    );
+    const cardFields = document.querySelector(".card-fields");
+
+    paymentMethods.forEach((method) => {
+      method.addEventListener("change", (e) => {
+        if (cardFields) {
+          cardFields.style.display =
+            e.target.value === "card" ? "block" : "none";
+
+          // Toggle required attribute on card fields
+          cardFields.querySelectorAll("input").forEach((input) => {
+            input.required = e.target.value === "card";
+          });
+        }
+      });
+    });
   }
 
-  static processOrder() {
-    // Clear cart
-    localStorage.removeItem("cart");
+  static setupPaymentFieldValidation() {
+    // Card number formatting
+    const cardInput = document.getElementById("card-number");
+    if (cardInput) {
+      cardInput.addEventListener("input", (e) => {
+        let value = e.target.value.replace(/\D/g, "");
+        value = value.replace(/(\d{4})/g, "$1 ").trim();
+        e.target.value = value.substring(0, 19);
+      });
+    }
 
-    // Show success message
-    alert("Thank you for your order!");
+    // Expiry date formatting
+    const expiryInput = document.getElementById("expiry");
+    if (expiryInput) {
+      expiryInput.addEventListener("input", (e) => {
+        let value = e.target.value.replace(/\D/g, "");
+        if (value.length >= 2) {
+          value = value.substring(0, 2) + "/" + value.substring(2);
+        }
+        e.target.value = value.substring(0, 5);
+      });
+    }
+  }
 
-    // Redirect to confirmation page
-    window.location.href = "confirmation.html";
+  static async processOrder(form) {
+    const submitButton = form.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+
+    try {
+      submitButton.disabled = true;
+      submitButton.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+      // Get form data
+      const formData = new FormData(form);
+      const orderData = {
+        customer: {
+          name: formData.get("fullname"),
+          email: formData.get("email"),
+          phone: formData.get("phone"),
+          address: {
+            street: formData.get("address"),
+            city: formData.get("city"),
+            state: formData.get("state"),
+            postalCode: formData.get("postal-code"),
+          },
+        },
+        payment: {
+          method: formData.get("payment-method"),
+          cardDetails:
+            formData.get("payment-method") === "card"
+              ? {
+                  number: formData.get("card-number")?.replace(/\s/g, ""),
+                  expiry: formData.get("expiry"),
+                  cvv: formData.get("cvv"),
+                }
+              : null,
+        },
+        items: JSON.parse(localStorage.getItem("cart") || "[]"),
+        orderDate: new Date().toISOString(),
+      };
+
+      // Simulate API call
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Clear cart
+      localStorage.removeItem("cart");
+
+      // Store order in order history
+      const orders = JSON.parse(localStorage.getItem("orders") || "[]");
+      orders.push(orderData);
+      localStorage.setItem("orders", JSON.stringify(orders));
+
+      // Show success message and redirect
+      window.Utils.showNotification("Order placed successfully!", "success");
+      setTimeout(() => {
+        window.location.href = "order-confirmation.html";
+      }, 1500);
+    } catch (error) {
+      console.error("Order processing error:", error);
+      window.Utils.showNotification(
+        "There was a problem processing your order. Please try again.",
+        "error"
+      );
+      submitButton.disabled = false;
+      submitButton.textContent = originalText;
+    }
   }
 }
 
-// Initialize CheckoutManager when DOM is loaded
 document.addEventListener("DOMContentLoaded", () => {
   CheckoutManager.init();
 });

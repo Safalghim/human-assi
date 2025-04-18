@@ -1,26 +1,28 @@
 class ProductManager {
   static async init() {
     try {
-      const productContainer = document.querySelector(".products-list");
-      const cartButton = document.getElementById("cart-button");
-      const shopNowBtn = document.querySelector(".shop-now");
+      const productContainer = document.querySelector(".products-grid");
+      if (!productContainer) return;
+
+      // Add loading state
+      this.showLoadingState(productContainer);
 
       this.products = await this.loadProducts();
 
-      if (shopNowBtn) {
-        this.initializeShopNowButton(shopNowBtn);
-      }
-
+      // Initialize filters and navigation
+      this.initializeFilters();
       this.initializeNavigation();
+
+      // Update product count
+      this.updateProductCount(this.products.length);
+
+      // Remove loading state and show products
+      this.hideLoadingState(productContainer);
       this.filterProducts("all");
 
       if (window.CartManager) {
         window.CartManager.updateCartCount();
       }
-
-      cartButton?.addEventListener("click", () => {
-        window.location.href = "cart.html";
-      });
     } catch (error) {
       console.error("Error initializing products:", error);
       this.showNotification("Failed to initialize products", "error");
@@ -69,21 +71,36 @@ class ProductManager {
   }
 
   static filterProducts(category, customProducts = null) {
-    const productContainer = document.querySelector(".products-list");
+    const productContainer = document.querySelector(".products-grid");
+    const categoryTags = document.querySelectorAll(".category-tag");
     if (!productContainer) return;
 
     try {
       productContainer.innerHTML = "";
-      const productsToShow =
-        customProducts ||
-        (category === "all"
-          ? this.products
-          : this.products.filter((product) => product.category === category));
+      let productsToShow = customProducts;
+
+      // Update category tag active state
+      categoryTags.forEach((tag) => {
+        tag.classList.remove("active");
+        if (tag.textContent.toLowerCase() === category.toLowerCase()) {
+          tag.classList.add("active");
+        }
+      });
+
+      if (!productsToShow) {
+        productsToShow =
+          category.toLowerCase() === "all products"
+            ? this.products
+            : this.products.filter(
+                (product) =>
+                  product.category.toLowerCase() === category.toLowerCase()
+              );
+      }
 
       if (productsToShow.length === 0) {
         productContainer.innerHTML = `
           <div class="no-products">
-            <p>No products found</p>
+            <p>No products found in this category</p>
           </div>
         `;
         return;
@@ -102,12 +119,19 @@ class ProductManager {
   static createProductCard(product) {
     const productCard = document.createElement("div");
     productCard.className = "product-card";
+    productCard.dataset.category = product.category;
+
+    const imageUrl = product.image_url.startsWith("../")
+      ? product.image_url
+      : "../" + product.image_url;
+
     productCard.innerHTML = `
-      <img src="${this.escapeHtml(product.image_url)}" alt="${this.escapeHtml(
+      <img src="${this.escapeHtml(imageUrl)}" alt="${this.escapeHtml(
       product.name
     )}" loading="lazy" />
-      <h2>${this.escapeHtml(product.name)}</h2>
-      <p class="price">$${product.price_usd.toFixed(2)}</p>
+      <h3>${this.escapeHtml(product.name)}</h3>
+      <p class="product-description">${this.escapeHtml(product.description)}</p>
+      <p class="price">£${product.price_usd.toFixed(2)}</p>
       <button class="add-to-cart" data-id="${this.escapeHtml(product.id)}">
         <i class="fas fa-shopping-cart"></i>
         Add to Cart
@@ -115,38 +139,58 @@ class ProductManager {
     `;
 
     const addButton = productCard.querySelector(".add-to-cart");
-    addButton.addEventListener("click", (e) =>
-      this.handleAddToCart(e, product)
-    );
+    addButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      this.handleAddToCart(e, product);
+    });
 
     return productCard;
   }
 
   static handleAddToCart(e, product) {
-    e.preventDefault();
-    e.stopPropagation();
-
     try {
-      const productToAdd = {
-        id: product.id,
-        name: product.name,
-        price: product.price_usd,
-        image: product.image_url,
-        quantity: 1,
-      };
-
-      if (window.CartManager) {
-        window.CartManager.addToCart(productToAdd);
-      }
-
       const button = e.currentTarget;
-      button.classList.add("added");
+      const icon = button.querySelector("i");
+
+      // Add loading state
+      button.disabled = true;
+      icon.classList.remove("fa-shopping-cart");
+      icon.classList.add("fa-spinner", "fa-spin");
+
       setTimeout(() => {
-        button.classList.remove("added");
+        const productToAdd = {
+          id: product.id,
+          name: product.name,
+          price: product.price_usd,
+          image: product.image_url.startsWith("../")
+            ? product.image_url
+            : "../" + product.image_url,
+          quantity: 1,
+          category: product.category,
+        };
+
         if (window.CartManager) {
-          window.CartManager.refreshCart();
+          window.CartManager.addToCart(productToAdd);
         }
-      }, 1000);
+
+        // Success state
+        icon.classList.remove("fa-spinner", "fa-spin");
+        icon.classList.add("fa-check");
+        button.classList.add("added");
+        button.innerHTML = '<i class="fas fa-check"></i> Added to Cart';
+
+        setTimeout(() => {
+          button.disabled = false;
+          button.classList.remove("added");
+          button.innerHTML = '<i class="fas fa-shopping-cart"></i> Add to Cart';
+        }, 2000);
+
+        // Add to recently viewed
+        if (window.RecentProductsManager) {
+          window.RecentProductsManager.addToRecent(product);
+        }
+      }, 800); // Simulate network delay for better UX
     } catch (error) {
       console.error("Error adding to cart:", error);
       this.showNotification("Failed to add item to cart", "error");
@@ -155,21 +199,31 @@ class ProductManager {
 
   static initializeShopNowButton(button) {
     button.addEventListener("click", () => {
-      document.querySelectorAll(".nav-link").forEach((link) => {
-        link.classList.remove("active");
+      document.querySelectorAll(".nav-link, .category-tag").forEach((el) => {
+        el.classList.remove("active");
       });
 
-      const allCategoryLink = document.querySelector('[data-category="all"]');
-      if (allCategoryLink) {
-        allCategoryLink.classList.add("active");
+      const allCategoryTag = document.querySelector(
+        ".category-tag:first-child"
+      );
+      if (allCategoryTag) {
+        allCategoryTag.classList.add("active");
       }
 
-      this.filterProducts("all");
+      this.filterProducts("All Products");
 
-      const productsSection = document.querySelector(".products-list");
+      const productsSection = document.querySelector(".products-grid");
       if (productsSection) {
         productsSection.scrollIntoView({ behavior: "smooth", block: "start" });
       }
+    });
+
+    // Initialize category tag click handlers
+    document.querySelectorAll(".category-tag").forEach((tag) => {
+      tag.addEventListener("click", () => {
+        const category = tag.textContent;
+        this.filterProducts(category);
+      });
     });
   }
 
@@ -205,18 +259,42 @@ class ProductManager {
   static showNotification(message, type = "success") {
     if (window.showNotification) {
       window.showNotification(message, type);
-      return;
+    } else {
+      console.log(message);
     }
+  }
 
-    const notification = document.createElement("div");
-    notification.className = `notification ${type}`;
-    notification.setAttribute("role", "alert");
-    notification.textContent = message;
-    document.body.appendChild(notification);
+  static showLoadingState(container) {
+    const loadingCards = Array(6)
+      .fill(0)
+      .map(
+        () => `
+      <div class="product-card loading">
+        <div class="img"></div>
+        <div class="h3"></div>
+        <div class="price"></div>
+        <div class="product-description"></div>
+        <button class="add-to-cart" disabled>
+          <i class="fas fa-shopping-cart"></i>
+          Add to Cart
+        </button>
+      </div>
+    `
+      )
+      .join("");
 
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
+    container.innerHTML = loadingCards;
+  }
+
+  static hideLoadingState(container) {
+    container.innerHTML = "";
+  }
+
+  static updateProductCount(count) {
+    const countElement = document.getElementById("product-count");
+    if (countElement) {
+      countElement.textContent = count;
+    }
   }
 }
 
