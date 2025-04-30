@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nepalese Goods</title>
-    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="main.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -15,8 +15,6 @@
     />
   </head>
   <body>
-    <a href="#main" class="skip-to-content">Skip to main content</a>
-
     <header>
       <div class="header">
         <h1>Nepalese Goods</h1>
@@ -27,31 +25,16 @@
       <div class="navbar">
         <ul class="nav-links">
           <li><a href="/" class="active" aria-current="page">Home</a></li>
-          <li><a href="pages/categories.html">Shop</a></li>
-          <li><a href="pages/about.html">About Us</a></li>
-          <li><a href="pages/contact.html">Contact</a></li>
+          <li><a href="categories.html">Categories</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact</a></li>
         </ul>
 
-        <div class="search-bar" role="search">
-          <input
-            type="text"
-            placeholder="Search products..."
-            aria-label="Search products"
-          />
-          <button type="submit" aria-label="Search">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-
         <div class="user-actions">
-          <a href="pages/sign-in.html" class="user-icon" aria-label="Sign in">
+          <a href="sign-in.html" class="user-icon" aria-label="Sign in">
             <i class="fas fa-user"></i>
           </a>
-          <a
-            href="pages/cart.html"
-            class="cart-icon"
-            aria-label="Shopping cart"
-          >
+          <a href="cart.html" class="cart-icon" aria-label="Shopping cart">
             <i class="fas fa-shopping-cart"></i>
             <span class="cart-count" aria-label="Items in cart">0</span>
           </a>
@@ -64,7 +47,7 @@
         <div class="hero-content">
           <h2>Discover Authentic Nepalese Crafts</h2>
           <p>Handcrafted with love, tradition, and centuries of expertise</p>
-          <a href="pages/categories.html" class="cta-button">Shop Now</a>
+          <a href="categories.html" class="cta-button">Shop Now</a>
         </div>
       </section>
 
@@ -152,8 +135,7 @@
         </p>
       </div>
     </footer>
-    <script src="js/cart.js"></script>
-    <script src="js/search.js"></script>
-    <script src="js/product-actions.js"></script>
+    <script src="cart.js" type="module"></script>
+    <script src="script.js" type="module"></script>
   </body>
 </html>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Shopping Cart - Nepalese Traditional Goods</title>
-    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="main.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -13,7 +13,6 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
-  
   </head>
   <body>
     <a href="#main" class="skip-to-content">Skip to main content</a>
@@ -27,22 +26,11 @@
     <nav aria-label="Main navigation">
       <div class="navbar">
         <ul class="nav-links">
-          <li><a href="../">Home</a></li>
-          <li><a href="categories.html">Shop</a></li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="/" class="active" aria-current="page">Home</a></li>
+          <li><a href="categories.html">Categories</a></li>
           <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact</a></li>
         </ul>
-
-        <div class="search-bar" role="search">
-          <input
-            type="text"
-            placeholder="Search products..."
-            aria-label="Search products"
-          />
-          <button type="submit" aria-label="Search">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
 
         <div class="user-actions">
           <a href="sign-in.html" class="user-icon" aria-label="Sign in">
@@ -65,11 +53,9 @@
       <section class="cart-section">
         <div class="cart-content">
           <h2>Your Shopping Cart</h2>
-          <div class="cart-items">
-            <!-- Cart items will be dynamically loaded here -->
-          </div>
+          <div class="cart-items"></div>
           <div class="cart-summary">
-            <div class="subtotal" role="group" aria-label="Order summary">
+            <div class="subtotal">
               <span>Subtotal:</span>
               <span>£0.00</span>
             </div>
@@ -81,19 +67,10 @@
               <span>Total:</span>
               <span>£0.00</span>
             </div>
-            <button
-              class="checkout-btn"
-              onclick="window.location.href='checkout.html'"
-            >
-              Proceed to Checkout
-            </button>
+            <a href="checkout.html" class="checkout-btn">Proceed to Checkout</a>
           </div>
         </div>
       </section>
-
-      <div class="recent-products">
-        <!-- Recently viewed products will be dynamically loaded here -->
-      </div>
     </main>
 
     <footer>
@@ -146,9 +123,8 @@
         </p>
       </div>
     </footer>
-    <script src="../js/utils.js"></script>
-    <script src="../js/cart.js"></script>
-    <script src="../js/recent-products.js"></script>
-    <script src="../js/search.js"></script>
   </body>
 </html>
+<!-- Load JavaScript files -->
+<script src="cart.js" type="module"></script>
+<script src="script.js" type="module"></script>

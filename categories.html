@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Categories - Nepalese Traditional Goods</title>
-    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="main.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -26,26 +26,11 @@
     <nav aria-label="Main navigation">
       <div class="navbar">
         <ul class="nav-links">
-          <li><a href="../">Home</a></li>
-          <li>
-            <a href="categories.html" class="active" aria-current="page"
-              >Shop</a
-            >
-          </li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="/" class="active" aria-current="page">Home</a></li>
+          <li><a href="categories.html">Categories</a></li>
           <li><a href="about.html">About Us</a></li>
+          <li><a href="contact.html">Contact</a></li>
         </ul>
-
-        <div class="search-bar" role="search">
-          <input
-            type="text"
-            placeholder="Search products..."
-            aria-label="Search products"
-          />
-          <button type="submit" aria-label="Search">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
 
         <div class="user-actions">
           <a href="sign-in.html" class="user-icon" aria-label="Sign in">
@@ -62,28 +47,22 @@
     <main id="main">
       <section class="categories-header">
         <h1>Shop by Category</h1>
+        <div class="category-filters">
+          <button class="filter-btn active" data-category="all">
+            All Products
+          </button>
+          <button class="filter-btn" data-category="Textiles">Textiles</button>
+          <button class="filter-btn" data-category="Art">Art & Crafts</button>
+          <button class="filter-btn" data-category="Home Decor">
+            Home Decor
+          </button>
+        </div>
         <p>Discover our wide range of authentic Nepalese products</p>
       </section>
 
-      <section class="category-section">
-        <div class="filter-container">
-          <!-- Filter groups will be dynamically inserted here -->
-        </div>
-
-        <div class="category-count">
-          <!-- Product count will be inserted here -->
-        </div>
-
-        <div class="product-grid">
-          <div class="products-list">
-            <!-- Products will be dynamically inserted here -->
-          </div>
-        </div>
-
-        <div class="recent-products">
-          <!-- Recently viewed products will be dynamically loaded here -->
-        </div>
-      </section>
+      <div class="products-list">
+        <!-- Products will be dynamically inserted here -->
+      </div>
     </main>
 
     <footer>
@@ -137,11 +116,8 @@
       </div>
     </footer>
 
-    <script src="../js/utils.js"></script>
-    <script src="../js/script.js"></script>
-    <script src="../js/search.js"></script>
-    <script src="../js/filters.js"></script>
-    <script src="../js/recent-products.js"></script>
-    <script src="../js/cart.js"></script>
+    <!-- Load JavaScript files -->
+    <script src="cart.js" type="module"></script>
+    <script src="script.js" type="module"></script>
   </body>
 </html>

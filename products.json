@@ -21,7 +21,7 @@
     {
       "id": "np003",
       "name": "Singing Bowl",
-      "category": "Handicrafts",
+      "category": "Art",
       "description": "Metal bowls that produce harmonic sounds when struck, commonly used in meditation and healing practices.",
       "origin": "Bhaktapur",
       "price_usd": 350,
@@ -30,7 +30,7 @@
     {
       "id": "np004",
       "name": "Khukuri Knife",
-      "category": "Weapons",
+      "category": "Art",
       "description": "Traditional curved knife associated with the Gurkhas, symbolizing bravery and used both as a tool and weapon.",
       "origin": "Eastern Nepal",
       "price_usd": 160,
@@ -39,7 +39,7 @@
     {
       "id": "np005",
       "name": "Rice Paper Journal",
-      "category": "Stationery",
+      "category": "Home Decor",
       "description": "Handmade journals crafted from Lokta bark, featuring unique textures and natural appeal.",
       "origin": "Kathmandu",
       "price_usd": 3,
@@ -66,7 +66,7 @@
     {
       "id": "np008",
       "name": "Nepali Tea",
-      "category": "Beverages",
+      "category": "Textiles",
       "description": "Aromatic tea varieties cultivated in the hilly regions, offering unique flavors and health benefits.",
       "origin": "Ilam",
       "price_usd": 10,
@@ -75,7 +75,7 @@
     {
       "id": "np009",
       "name": "Handmade Jewelry",
-      "category": "Accessories",
+      "category": "Textiles",
       "description": "Ethnic jewelry crafted by local artisans, featuring intricate designs and traditional motifs.",
       "origin": "Kathmandu",
       "price_usd": 25,

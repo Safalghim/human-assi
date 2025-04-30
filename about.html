@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>About Us - Nepalese Traditional Goods</title>
-    <link rel="stylesheet" href="../css/main.css" />
+    <link rel="stylesheet" href="main.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
@@ -26,24 +26,11 @@
     <nav aria-label="Main navigation">
       <div class="navbar">
         <ul class="nav-links">
-          <li><a href="../">Home</a></li>
-          <li><a href="categories.html">Shop</a></li>
+          <li><a href="/" class="active" aria-current="page">Home</a></li>
+          <li><a href="categories.html">Categories</a></li>
+          <li><a href="about.html">About Us</a></li>
           <li><a href="contact.html">Contact</a></li>
-          <li>
-            <a href="about.html" class="active" aria-current="page">About Us</a>
-          </li>
         </ul>
-
-        <div class="search-bar" role="search">
-          <input
-            type="text"
-            placeholder="Search products..."
-            aria-label="Search products"
-          />
-          <button type="submit" aria-label="Search">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
 
         <div class="user-actions">
           <a href="sign-in.html" class="user-icon" aria-label="Sign in">
@@ -58,11 +45,6 @@
     </nav>
 
     <main id="main">
-      <section class="about-header">
-        <h1>Our Story</h1>
-        <p>Bringing Nepal's finest crafts to the world</p>
-      </section>
-
       <div class="about-container">
         <section class="about-section mission">
           <h2>Our Mission</h2>
@@ -109,35 +91,6 @@
                 We support local communities by providing economic opportunities
                 and preserving traditional crafts.
               </p>
-            </div>
-          </div>
-        </section>
-
-        <section class="about-section journey">
-          <h2>Our Journey</h2>
-          <div class="journey-content">
-            <div class="journey-text">
-              <p>
-                Founded in 2023, Nepalese Goods began with a vision to bridge
-                the gap between talented Nepalese artisans and global consumers
-                who appreciate authentic handcrafted products. What started as a
-                small collection of traditional items has grown into a carefully
-                curated selection of Nepal's finest handicrafts.
-              </p>
-              <p>
-                Today, we work directly with over 100 artisans across Nepal,
-                helping them showcase their craft to the world while ensuring
-                they receive fair compensation for their incredible work. Our
-                collection includes everything from luxurious Pashmina shawls to
-                intricate Thangka paintings, each piece telling its own story of
-                Nepal's rich cultural heritage.
-              </p>
-            </div>
-            <div class="journey-image">
-              <img
-                src="images/artisan-working.jpg"
-                alt="Nepalese artisan at work"
-              />
             </div>
           </div>
         </section>
@@ -211,8 +164,7 @@
         </p>
       </div>
     </footer>
-    <script src="../js/utils.js"></script>
-    <script src="../js/cart.js"></script>
-    <script src="../js/search.js"></script>
   </body>
 </html>
+ <script src="cart.js" type="module"></script>
+    <script src="script.js" type="module"></script>
