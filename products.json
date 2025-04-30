@@ -7,7 +7,7 @@
       "description": "Luxurious shawls made from the fine wool of Himalayan goats, known for their softness and warmth.",
       "origin": "Kathmandu",
       "price_usd": 199,
-      "image_url": "../images/products/np001.jpg"
+      "image_url": "np001.jpg"
     },
     {
       "id": "np002",
@@ -16,7 +16,7 @@
       "description": "Traditional Buddhist scroll paintings depicting deities and mandalas, used for meditation and religious purposes.",
       "origin": "Kathmandu Valley",
       "price_usd": 20,
-      "image_url": "../images/products/np002.jpg"
+      "image_url": "np002.jpg"
     },
     {
       "id": "np003",
@@ -25,7 +25,7 @@
       "description": "Metal bowls that produce harmonic sounds when struck, commonly used in meditation and healing practices.",
       "origin": "Bhaktapur",
       "price_usd": 350,
-      "image_url": "../images/products/np003.png"
+      "image_url": "np003.png"
     },
     {
       "id": "np004",
@@ -34,7 +34,7 @@
       "description": "Traditional curved knife associated with the Gurkhas, symbolizing bravery and used both as a tool and weapon.",
       "origin": "Eastern Nepal",
       "price_usd": 160,
-      "image_url": "../images/products/np004.jpg"
+      "image_url": "np004.jpg"
     },
     {
       "id": "np005",
@@ -43,7 +43,7 @@
       "description": "Handmade journals crafted from Lokta bark, featuring unique textures and natural appeal.",
       "origin": "Kathmandu",
       "price_usd": 3,
-      "image_url": "../images/products/np005.jpg"
+      "image_url": "np005.jpg"
     },
     {
       "id": "np006",
@@ -52,7 +52,7 @@
       "description": "Warm and durable blankets made from the wool of Himalayan yaks, ideal for cold climates.",
       "origin": "Himalayan Region",
       "price_usd": 75,
-      "image_url": "../images/products/np006.webp"
+      "image_url": "np006.webp"
     },
     {
       "id": "np007",
@@ -61,7 +61,7 @@
       "description": "Hand-knotted rugs made from sheep’s wool, featuring traditional patterns and craftsmanship.",
       "origin": "Patan",
       "price_usd": 300,
-      "image_url": "../images/products/np007.webp"
+      "image_url": "np007.webp"
     },
     {
       "id": "np008",
@@ -70,7 +70,7 @@
       "description": "Aromatic tea varieties cultivated in the hilly regions, offering unique flavors and health benefits.",
       "origin": "Ilam",
       "price_usd": 10,
-      "image_url": "../images/products/np008.webp"
+      "image_url": "np008.webp"
     },
     {
       "id": "np009",
@@ -79,7 +79,7 @@
       "description": "Ethnic jewelry crafted by local artisans, featuring intricate designs and traditional motifs.",
       "origin": "Kathmandu",
       "price_usd": 25,
-      "image_url": "../images/products/np009.webp"
+      "image_url": "np009.webp"
     },
     {
       "id": "np010",
@@ -88,7 +88,7 @@
       "description": "Decorative lamps made from handmade Lokta paper, adding a warm ambiance to any space.",
       "origin": "Pokhara",
       "price_usd": 5,
-      "image_url": "../images/products/np010.webp"
+      "image_url": ".np010.webp"
     }
   ]
 }
