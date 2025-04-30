@@ -15,7 +15,7 @@ function initializeFeaturedProducts() {
   });
 }
 
-function showNotification(message) {
+export function showNotification(message) {
   const notification = document.createElement("div");
   notification.className = "notification success";
   notification.textContent = message;

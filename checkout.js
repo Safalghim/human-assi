@@ -1,3 +1,4 @@
+import { showNotification } from "./script";
 class CheckoutManager {
   constructor() {
     this.form = document.getElementById("checkout-form");
@@ -77,7 +78,10 @@ class CheckoutManager {
       e.preventDefault();
       if (this.validateForm()) {
         localStorage.removeItem("cart");
-        window.location.href = "confirmation.html";
+        showNotification(
+          "Account created successfully! Redirecting to home page..."
+        );
+        window.location.href = "index.html";
       }
     });
   }
